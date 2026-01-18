@@ -2,12 +2,12 @@ import { eq } from "drizzle-orm";
 import { db } from "../db/connection";
 import { NewUser, User, users } from "../db/schema";
 import bcrypt from 'bcrypt';
+import { AppError } from "../utils/appError";
 
 export const registerUser = async (data: NewUser) => {
     const existingUser = await getUserByEmail(data.email);
     if (existingUser) {
-        throw new Error('User already exist');
-        // throw new AppError('User already exist', 400);
+        throw new AppError('User already exist', 400);
     }
 
     const hashedPassword = await hashPassword(data.password);
