@@ -3,6 +3,7 @@ import { db } from "../db/connection";
 import { NewUser, User, users } from "../db/schema";
 import bcrypt from 'bcrypt';
 import { AppError } from "../utils/appError";
+import crypto from 'crypto';
 
 export const registerUser = async (data: NewUser) => {
     const existingUser = await getUserByEmail(data.email);
@@ -22,6 +23,31 @@ export const registerUser = async (data: NewUser) => {
     return formatUser(user);
 }
 
+export const login = async (email: string, password: string) => {
+    const user = await getUserByEmail(email);
+    if (!user) return null;
+
+    const isPasswordValid = verifyPassword(password, user.password);
+    if (!isPasswordValid) return null;
+
+    const token = crypto.randomBytes(32).toString('hex');
+
+    await db
+        .update(users)
+        .set({ token, updatedAt: new Date() })
+        .where(eq(users.id, user.id));
+
+    const result = formatUser(user);
+    return { ...result, token };
+}
+
+export const logout = async (token: string) => {
+    await db
+        .update(users)
+        .set({ token: null, updatedAt: new Date() })
+        .where(eq(users.token, token))
+}
+
 // Helpers functions
 export const getUserByEmail = async (email: string) => {
     const result = await db
@@ -36,8 +62,12 @@ export const getUserByEmail = async (email: string) => {
     return user;
 }
 
-export const hashPassword = async (password: string) => {
-    return bcrypt.hash(password, 10);
+export const hashPassword = (password: string) => {
+    return bcrypt.hashSync(password, 10);
+}
+
+export const verifyPassword = (password: string, hashPassword: string) => {
+    return bcrypt.compareSync(password, hashPassword);
 }
 
 export const formatUser = (user: User) => {
