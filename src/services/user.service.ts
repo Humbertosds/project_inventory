@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { eq, isNull } from "drizzle-orm";
 import { db } from "../db/connection";
 import { NewUser, User, users } from "../db/schema";
 import bcrypt from 'bcrypt';
@@ -48,8 +48,60 @@ export const logout = async (token: string) => {
         .where(eq(users.token, token))
 }
 
+export const listUsers = async (offset: number = 0, limit: number = 10) => {
+    const usersList = await db
+        .select()
+        .from(users)
+        .where(isNull(users.deletedAt))
+        .offset(offset)
+        .limit(limit);
+
+    return usersList.map(formatUser);
+}
+
+export const updateUser = async (id: string, data: Partial<NewUser>) => {
+    const user = await getUserById(id);
+    if (!user) throw new AppError('User not found', 404);
+
+    if (data.email && data.email !== user.email) {
+        const emailInUse = await getUserByEmail(data.email, true);
+        if (emailInUse) throw new AppError('Email already in use', 400);
+    }
+
+    const updateData: Partial<NewUser> = { ...data };
+
+    if (data.password) {
+        updateData.password = hashPassword(data.password);
+    }
+
+    // TODO: handle avatar;
+
+    updateData.updatedAt = new Date();
+
+    const result = await db
+        .update(users)
+        .set(updateData)
+        .where(eq(users.id, id))
+        .returning();
+
+    const updatedUser = result[0];
+    if (!updatedUser) return null;
+
+    return formatUser(updatedUser);
+}
+
+export const deleteUser = async (id: string) => {
+    const result = await db
+        .update(users)
+        .set({ deletedAt: new Date() })
+        .where(eq(users.id, id))
+        .returning();
+
+    return result[0] ?? null;
+}
+
 // Helpers functions
-export const getUserByEmail = async (email: string) => {
+export const getUserByEmail = async (email: string, includeDeleted: boolean = false) => {
     const result = await db
         .select()
         .from(users)
@@ -58,7 +110,9 @@ export const getUserByEmail = async (email: string) => {
 
     const user = result[0];
 
-    if (!user || user.deletedAt) return null;
+    if (!user) return null;
+    if (user && user.deletedAt && includeDeleted === false) return null;
+
     return user;
 }
 
