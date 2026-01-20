@@ -2,6 +2,7 @@ import { RequestHandler } from "express";
 import { listUsersSchema, registerUserSchema, updateUserSchema, userIdSchema } from "../validators/user.validator";
 import * as userService from "../services/user.service";
 import { AppError } from "../utils/appError";
+import { saveAvatar } from "../services/file.service";
 
 export const registerUser: RequestHandler = async (req, res) => {
     const data = registerUserSchema.parse(req.body);
@@ -26,9 +27,16 @@ export const updateUser: RequestHandler = async (req, res) => {
     const { id } = userIdSchema.parse(req.params);
     const data = updateUserSchema.parse(req.body);
 
-    // Handle avatar upload;
+    let avatarFilename: string | undefined;
+    if (req.file) {
+        avatarFilename = await saveAvatar(req.file.buffer, req.file.originalname);
+    }
+    const updateData = { ...data };
+    if (avatarFilename) {
+        updateData.avatar = avatarFilename
+    }
 
-    const updatedUser = await userService.updateUser(id, data);
+    const updatedUser = await userService.updateUser(id, updateData);
 
     res.status(200).json({ error: null, data: updatedUser })
 }
