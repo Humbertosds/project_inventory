@@ -2,10 +2,10 @@ import { Router } from "express";
 import * as authController from '../controllers/auth.controller';
 import { authMiddleware } from "../middlewares/auth.middleware";
 
-const authRouter = Router();
+const router = Router();
 
-authRouter.post('/login', authController.login);
-authRouter.post('/logout', authController.logout);
-authRouter.get('/me', authMiddleware, authController.getMe);
+router.post('/login', authController.login);
+router.post('/logout', authController.logout);
+router.get('/me', authMiddleware, authController.getMe);
 
-export default authRouter;
+export default router;
