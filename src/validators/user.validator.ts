@@ -3,7 +3,7 @@ import z from "zod";
 export const registerUserSchema = z.object({
     name: z.string().min(2, 'Name required').max(255),
     email: z.email('email must be valid'),
-    password: z.string().min(8, 'password must be greater then 8 characters')
+    password: z.string().min(8, 'password must be greater than 8 characters')
 });
 
 export const listUsersSchema = z.object({
@@ -18,6 +18,6 @@ export const userIdSchema = z.object({
 export const updateUserSchema = z.object({
     name: z.string().min(2, 'Name too short').max(255).optional(),
     email: z.email('Email format invalid').optional(),
-    password: z.string().min(8, 'password must be greater then or equal to 8 characters').optional(),
+    password: z.string().min(8, 'password must be greater than or equal to 8 characters').optional(),
     avatar: z.string().nullable().optional()
 });

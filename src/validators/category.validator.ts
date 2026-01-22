@@ -1,7 +1,7 @@
 import z from "zod";
 
 export const createCategorySchema = z.object({
-    name: z.string('Name required').min(2, 'name must be greater then or equal to 2 characters').max(255)
+    name: z.string('Name required').min(2, 'name must be greater than or equal to 2 characters').max(255)
 })
 
 export const listCategoriesSchema = z.object({
@@ -13,5 +13,5 @@ export const categoryIdSchema = z.object({
 })
 
 export const updateCategorySchema = z.object({
-    name: z.string('Name required').min(2, 'name must be greater then or equal to 2 characters').max(255)
+    name: z.string('Name required').min(2, 'name must be greater than or equal to 2 characters').max(255)
 })

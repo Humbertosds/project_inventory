@@ -1,7 +1,8 @@
 import { Router, Request, Response } from 'express';
 import userRouter from './user.routes';
 import authRouter from './auth.routes';
-import categoriesRoutes from './categories.routes';
+import categoriesRouter from './categories.routes';
+import productsRouter from './products.routes';
 import { authMiddleware } from '../middlewares/auth.middleware';
 
 const router = Router();
@@ -15,6 +16,7 @@ router.use('/auth', authRouter);
 router.use(authMiddleware);
 
 router.use('/users', userRouter);
-router.use('/categories', categoriesRoutes)
+router.use('/categories', categoriesRouter);
+router.use('/products', productsRouter);
 
 export default router;
