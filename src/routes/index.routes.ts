@@ -4,6 +4,7 @@ import authRouter from './auth.routes';
 import categoriesRouter from './categories.routes';
 import productsRouter from './products.routes';
 import movesRouter from './moves.routes';
+import dashboardRouter from './dashboard.routes';
 import { authMiddleware } from '../middlewares/auth.middleware';
 
 const router = Router();
@@ -16,6 +17,7 @@ router.use('/auth', authRouter);
 
 router.use(authMiddleware);
 
+router.use('/dashboard', dashboardRouter);
 router.use('/users', userRouter);
 router.use('/categories', categoriesRouter);
 router.use('/products', productsRouter);
