@@ -1,6 +1,6 @@
 import { RequestHandler } from "express";
 import * as moveService from '../services/move.service';
-import { addMoveSchema } from "../validators/move.validator";
+import { addMoveSchema, ListMovesSchema } from "../validators/move.validator";
 import { AppError } from "../utils/appError";
 
 export const addMove: RequestHandler = async (req, res) => {
@@ -13,4 +13,11 @@ export const addMove: RequestHandler = async (req, res) => {
     });
 
     res.status(201).json({ error: null, data: move });
+}
+
+export const ListMoves: RequestHandler = async (req, res) => {
+    const data = ListMovesSchema.parse(req.query);
+    const moves = await moveService.listMoves(data);
+
+    res.status(200).json({ error: null, data: moves })
 }
