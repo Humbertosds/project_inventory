@@ -1,4 +1,4 @@
-import { and, desc, eq, sql } from "drizzle-orm";
+import { and, desc, eq, isNull, sql } from "drizzle-orm";
 import { db } from "../db/connection";
 import { moves, NewMove, products } from "../db/schema";
 import { AppError } from "../utils/appError";
@@ -17,7 +17,7 @@ export const addMove = async (data: Omit<NewMove, 'unitPrice'>) => {
                 unitPrice: products.unitPrice
             })
             .from(products)
-            .where(eq(products.id, data.productId))
+            .where(and(eq(products.id, data.productId), isNull(products.deletedAt)))
             .for('update');
 
         if (productResults.length === 0) {
