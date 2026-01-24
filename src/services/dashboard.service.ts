@@ -1,7 +1,7 @@
-import { and, gte, isNull, lte, sql } from "drizzle-orm"
+import { and, eq, gte, isNull, lte, sql } from "drizzle-orm"
 import { db } from "../db/connection"
 import { moves, products } from "../db/schema"
-import { getMovesSummaryInput } from "../validators/dashboard.validator";
+import { DateRangeInput } from "../validators/dashboard.validator";
 
 export const getInventoryValue = async () => {
     const result = await db
@@ -15,7 +15,7 @@ export const getInventoryValue = async () => {
     return 0;
 }
 
-export const getMovesSummary = async (range: getMovesSummaryInput) => {
+export const getMovesSummary = async (range: DateRangeInput) => {
     const conditions = [];
 
     if (range.startDate) {
@@ -48,4 +48,34 @@ export const getMovesSummary = async (range: getMovesSummaryInput) => {
     })
 
     return summary;
+}
+
+export const getMovesGraph = async (range: DateRangeInput) => {
+    const conditions = [
+        eq(moves.type, 'out')
+    ];
+
+    if (range.startDate) {
+        const startDate = new Date(range.startDate);
+        conditions.push(gte(moves.createdAt, startDate))
+    }
+    if (range.endDate) {
+        const endDate = new Date(range.endDate);
+        endDate.setUTCHours(23, 59, 59, 999);
+        conditions.push(lte(moves.createdAt, endDate))
+    }
+
+    const dateFormat = sql<number>`TO_CHAR(${moves.createdAt}, 'YYYY-MM-DD')`
+
+    const result = await db
+        .select({
+            date: dateFormat,
+            totalValue: sql<number>`SUM(${moves.quantity} * ${moves.unitPrice})`
+        })
+        .from(moves)
+        .where(and(...conditions))
+        .groupBy(dateFormat)
+        .orderBy(dateFormat);
+
+    return result;
 }

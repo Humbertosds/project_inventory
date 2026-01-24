@@ -14,3 +14,10 @@ export const getMovesSummary: RequestHandler = async (req, res) => {
 
     res.status(200).json({ error: null, data: { summary } })
 }
+
+export const getMovesGraph: RequestHandler = async (req, res) => {
+    const query = getMovesSummarySchema.parse(req.query);
+    const graph = await dashboardService.getMovesGraph(query);
+
+    res.status(200).json({ error: null, data: graph })
+}
