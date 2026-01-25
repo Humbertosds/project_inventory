@@ -21,3 +21,22 @@ export const getMovesGraph: RequestHandler = async (req, res) => {
 
     res.status(200).json({ error: null, data: graph })
 }
+
+export const getLowStockProducts: RequestHandler = async (req, res) => {
+    const data = await dashboardService.getLowStockProducts();
+
+    res.status(200).json({ error: null, data });
+}
+
+export const getHighStockProducts: RequestHandler = async (req, res) => {
+    const data = await dashboardService.getHighStockProducts();
+
+    res.status(200).json({ error: null, data });
+}
+
+export const getStagnantProducts: RequestHandler = async (req, res) => {
+    const query = getMovesSummarySchema.parse(req.query);
+    const data = await dashboardService.getStagnantProducts(query);
+
+    res.status(200).json({ error: null, data });
+}
