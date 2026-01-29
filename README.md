@@ -7,6 +7,7 @@
 [![Express](https://img.shields.io/badge/Express-5.x-000000?style=flat-square&logo=express&logoColor=white)](https://expressjs.com)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?style=flat-square&logo=postgresql&logoColor=white)](https://www.postgresql.org)
 [![Drizzle](https://img.shields.io/badge/Drizzle_ORM-0.45-FFCC00?style=flat-square)](https://orm.drizzle.team)
+[![OpenAPI](https://img.shields.io/badge/OpenAPI-3.0-6BA539?style=flat-square&logo=openapi-initiative&logoColor=white)](https://www.openapis.org/)
 
 ---
 
@@ -37,6 +38,23 @@ Todas as rotas (exceto `/api/auth/login`, `/api/auth/logout` e `/api/ping`) exig
 | Validação     | Zod |
 | Autenticação  | bcrypt + token em texto (header) |
 | Upload        | Multer + Sharp (redimensionamento de imagens) |
+| Documentação  | OpenAPI 3.0 + Swagger UI (swagger-ui-express) |
+
+---
+
+## Documentação OpenAPI
+
+A API está documentada com **OpenAPI 3.0**. Com o servidor rodando, a documentação interativa (Swagger UI) fica disponível em:
+
+**http://localhost:4000/api-docs**
+
+Na interface você pode:
+
+- Ver todos os endpoints, parâmetros e schemas de request/response
+- Testar as rotas diretamente ("Try it out")
+- Autenticar com o token obtido em `POST /auth/login` (botão **Authorize**) para chamar rotas protegidas
+
+A especificação está em `src/config/openapi.ts` e cobre Auth, Users, Categories, Products, Moves e Dashboard.
 
 ---
 
@@ -151,6 +169,7 @@ O servidor sobe em `http://localhost:4000` (ou na `PORT` do `.env`).
 ```
 projeto_estoque/
 ├── src/
+│   ├── config/       # Especificação OpenAPI (openapi.ts)
 │   ├── controllers/   # Lógica das rotas (auth, users, categories, products, moves, dashboard)
 │   ├── db/
 │   │   ├── schema/    # Tabelas Drizzle (users, categories, products, moves)
