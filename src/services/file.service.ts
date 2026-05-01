@@ -1,12 +1,6 @@
 import path from "path";
-import { fileURLToPath } from "url";
 import fs from 'fs/promises';
 import sharp from "sharp";
-
-// Obtém o caminho do arquivo atual e o diretório
-// Necessário em módulos ES6 onde __dirname não está disponível nativamente
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 // Constantes de configuração
 const AVATAR_SIZE = 50; // Tamanho em pixels (50x50)
